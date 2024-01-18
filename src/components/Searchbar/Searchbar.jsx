@@ -9,10 +9,8 @@ class Searchbar extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.inputvalue !== prevState.inputvalue) {
-      // Викликати вашу функцію для пошуку зображень тут
       this.props.onSubmit(this.state.inputvalue);
 
-      // Код для встановлення cookies
       document.cookie = `searchQuery=${this.state.inputvalue}; SameSite=None; Secure`;
     }
   }
