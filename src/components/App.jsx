@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-
+import Notiflix from 'notiflix';
 import Button from './Button';
 import ImageGallery from './ImageGallery';
 import { fetchImages } from './feachImage/FeachImage';
-import Searchbar from './Searchbar';
-import Notiflix from 'notiflix';
+import Searchbar from './Searchbar/Searchbar';
 import Loader from './Loader';
 
 let page = 1;
@@ -13,15 +12,20 @@ class App extends Component {
   state = {
     inputData: '',
     items: [],
-
     status: 'idle',
     totalHits: 0,
   };
 
-  handleSubmit = async inputData => {
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.inputData !== prevState.inputData) {
+      this.handleSubmit(this.state.inputData);
+    }
+  }
+
+  handleSubmit = async (inputData) => {
     page = 1;
     if (inputData.trim() === '') {
-      Notiflix.Notify.info('You cannot search by empty field, try again.');
+      Notiflix.Notify.info('You cannot search by an empty field, try again.');
       return;
     } else {
       try {
@@ -45,12 +49,13 @@ class App extends Component {
       }
     }
   };
+
   onNextPage = async () => {
     this.setState({ status: 'pending' });
 
     try {
       const { hits } = await fetchImages(this.state.inputData, (page += 1));
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         items: [...prevState.items, ...hits],
         status: 'resolved',
       }));
@@ -58,6 +63,7 @@ class App extends Component {
       this.setState({ status: 'rejected' });
     }
   };
+
   render() {
     const { totalHits, status, items } = this.state;
     if (status === 'idle') {
@@ -98,4 +104,5 @@ class App extends Component {
     }
   }
 }
+
 export default App;
